@@ -15,6 +15,8 @@ class Engine {
         double cHeight  = 6e11;
 
         bool init();
+        bool buffers();
+        void addVertex(float x, float y, float z);
         void run();
         void cleanup();
 
@@ -25,6 +27,7 @@ class Engine {
         unsigned int fragmentShader; 
         unsigned int VAO = 0;
         unsigned int VBO = 0;
+        std::vector<float> vertices;
 
         void render();
         static void framebuffer_size_callback(

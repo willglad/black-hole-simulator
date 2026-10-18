@@ -36,31 +36,6 @@ bool Engine::init() {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
-
-    // Defining verticies
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
-    };
-
-    // VBO
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // VAO
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glVertexAttribPointer(
-        0,                  // Attribute location
-        3,                  // Components per vertex
-        GL_FLOAT,           // Data type
-        GL_FALSE,           // Do not normalise
-        3*sizeof(float),    // Stride in bytes
-        (void*)0            // Offset into buffer
-    );
-    glEnableVertexAttribArray(0);
     
     // Compiling vertex and fragment shaders
     std::string vertexSource = loadShaderFile("src/shaders/vertex.glsl");
@@ -114,6 +89,34 @@ void Engine::framebuffer_size_callback(
     int height
 ){
     glViewport(0, 0, width, height);
+}
+
+void Engine::addVertex(float x, float y, float z) {
+    vertices.push_back(x);
+    vertices.push_back(y);
+    vertices.push_back(z);
+}
+
+bool Engine::buffers() {
+    // VBO
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    // VAO
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    glVertexAttribPointer(
+        0,                  // Attribute location
+        3,                  // Components per vertex
+        GL_FLOAT,           // Data type
+        GL_FALSE,           // Do not normalise
+        3*sizeof(float),    // Stride in bytes
+        (void*)0            // Offset into buffer
+    );
+    glEnableVertexAttribArray(0);
+
+    return true;
 }
 
 void Engine::run(){
