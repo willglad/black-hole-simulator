@@ -7,26 +7,31 @@ class Engine {
     public:
 
         // Window dimensions
-        int wWidth      = 800;
+        int wWidth      = 600;
         int wHeight     = 600;
 
         // Simulation dimensions
         double cWidth   = 8e11;
         double cHeight  = 6e11;
 
+        float aspectRatio = float(wWidth) / float(wHeight);
+
         bool init();
         bool buffers();
-        void addVertex(float x, float y, float z);
+        void addCircle(const Circle& c);
         void run();
         void cleanup();
 
     private:
         GLFWwindow* window = nullptr;
+
         unsigned int shaderProgram = 0;
         unsigned int vertexShader;
         unsigned int fragmentShader; 
+
         unsigned int VAO = 0;
         unsigned int VBO = 0;
+
         std::vector<float> vertices;
 
         void render();

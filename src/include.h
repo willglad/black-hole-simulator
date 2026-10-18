@@ -10,7 +10,10 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
+#include "vertex.h"
+#include "circle.h"
 #include "engine.h"
 #include "engine.cpp"
+
 
 #endif

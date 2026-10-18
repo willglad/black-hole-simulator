@@ -12,12 +12,15 @@ int main() {
         return -1;
     }
 
-    float v1[] = {-0.5f, -0.5f, 0.0f};
-    float v2[] = {0.5f, -0.5f, 0.0f};
-    float v3[] = {0.0f, 0.5f, 0.0f};
-    engine.addVertex(v1[0], v1[1], v1[2]);
-    engine.addVertex(v2[0], v2[1], v2[2]);
-    engine.addVertex(v3[0], v3[1], v3[2]);
+    Circle c0({-0.25f, 0.25f, 0.0f}, 0.25f);
+    c0.constructVertices(50);
+    engine.addCircle(c0);
+
+    Circle c1({0.25f, -0.25f, 0.0f}, 0.25f);
+    c1.constructVertices(50);
+    engine.addCircle(c1);
+
+    std::cout << engine.aspectRatio << std::endl;
 
     if (!engine.buffers()){
         return -1;

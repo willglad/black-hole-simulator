@@ -29,7 +29,6 @@ bool Engine::init() {
     }
 
     glfwSetWindowUserPointer(window, this);
-
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // Set intial viewport
@@ -88,13 +87,24 @@ void Engine::framebuffer_size_callback(
     int width,
     int height
 ){
+
+    auto* engine = static_cast<Engine*>(
+        glfwGetWindowUserPointer(window)
+    );
+
+    if (height > 0) 
+        engine->aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+
     glViewport(0, 0, width, height);
 }
 
-void Engine::addVertex(float x, float y, float z) {
-    vertices.push_back(x);
-    vertices.push_back(y);
-    vertices.push_back(z);
+void Engine::addCircle(const Circle& c) {
+    // Push back for each vertex
+    for (auto i : c.vertices){
+        vertices.push_back(i.x);
+        vertices.push_back(i.y);
+        vertices.push_back(i.z);
+    }
 }
 
 bool Engine::buffers() {
@@ -136,8 +146,14 @@ void Engine::render(){
 
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    
+    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+    GLint location = glGetUniformLocation(shaderProgram, "aspectRatio");
+    glUniform1f(location, aspectRatio);
+    if (location == -1){
+        std::cerr << "location: " << std::to_string(location) << std::endl; 
+    }
+
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
