@@ -2,6 +2,7 @@ build/
 include/
 src/gl.c
 CMakeLists.txt
+build-run.sh
 *.o
 *.a
 *.so
