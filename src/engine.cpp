@@ -1,5 +1,3 @@
-#include "include.h"
-
 bool Engine::init() {
     if (!glfwInit()){
         std::cerr << "Failed to initialise GLFW" << std::endl;

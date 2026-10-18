@@ -1,6 +1,8 @@
 #ifndef CIRCLE_H
 #define CIRCLE_H
 
+#include "vertex.h"
+
 #include <cmath>
 
 class Circle {

@@ -1,7 +1,3 @@
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
 #include "include.h"
 
 int main() {
