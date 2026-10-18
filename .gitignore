@@ -1,0 +1,7 @@
+build/
+include/
+src/gl.c
+CMakeLists.txt
+*.o
+*.a
+*.so
