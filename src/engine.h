@@ -12,11 +12,16 @@ class Engine {
         double cWidth   = 8e11;
         double cHeight  = 6e11;
 
+        // aspect ratio based on initial window dimensions
         float aspectRatio = float(wWidth) / float(wHeight);
+
+        // Background color
+        float background_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
         bool init();
         bool buffers();
         void addCircle(const Circle& c);
+        void addRay(const Ray& r);
         void run();
         void cleanup();
 

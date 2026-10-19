@@ -105,6 +105,15 @@ void Engine::addCircle(const Circle& c) {
     }
 }
 
+void Engine::addRay(const Ray& r){
+    // Push back for each vertex
+    for (auto i : r.vertices){
+        vertices.push_back(i.x);
+        vertices.push_back(i.y);
+        vertices.push_back(i.z);
+    }
+}
+
 bool Engine::buffers() {
     // VBO
     glGenBuffers(1, &VBO);
@@ -139,7 +148,7 @@ void Engine::run(){
 }
 
 void Engine::render(){
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(background_color[0], background_color[1], background_color[2], background_color[3]);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
