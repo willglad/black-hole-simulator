@@ -19,8 +19,10 @@ class Engine {
         float background_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
         bool init();
-        bool buffers();
+        bool buffers(unsigned int& VBO, unsigned int& VAO, std::vector<float>& vertices);
+        bool updateBuffers(unsigned int& VBO, std::vector<float>& vertices);
         void addCircle(const Circle& c);
+        void submitRay(const Ray& r);
         void addRay(const Ray& r);
         void run();
         void cleanup();
@@ -32,10 +34,14 @@ class Engine {
         unsigned int vertexShader;
         unsigned int fragmentShader; 
 
-        unsigned int VAO = 0;
-        unsigned int VBO = 0;
+        unsigned int dynVAO = 0;
+        unsigned int dynVBO = 0;
+        unsigned int statVAO = 0;
+        unsigned int statVBO = 0;
 
-        std::vector<float> vertices;
+        std::vector<float> staticVertices;
+        std::vector<float> dynamicVertices;
+        std::vector<Ray> rays;
 
         void render();
         static void framebuffer_size_callback(

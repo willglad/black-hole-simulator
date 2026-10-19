@@ -99,22 +99,28 @@ void Engine::framebuffer_size_callback(
 void Engine::addCircle(const Circle& c) {
     // Push back for each vertex
     for (auto i : c.vertices){
-        vertices.push_back(i.x);
-        vertices.push_back(i.y);
-        vertices.push_back(i.z);
+        staticVertices.push_back(i.x);
+        staticVertices.push_back(i.y);
+        staticVertices.push_back(i.z);
     }
+}
+
+void Engine::submitRay(const Ray& r){
+    // Add ray to rays
+    rays.push_back(r);
+    addRay(r);
 }
 
 void Engine::addRay(const Ray& r){
     // Push back for each vertex
     for (auto i : r.vertices){
-        vertices.push_back(i.x);
-        vertices.push_back(i.y);
-        vertices.push_back(i.z);
+        dynamicVertices.push_back(i.x);
+        dynamicVertices.push_back(i.y);
+        dynamicVertices.push_back(i.z);
     }
 }
 
-bool Engine::buffers() {
+bool Engine::buffers(unsigned int& VBO, unsigned int& VAO, std::vector<float>& vertices) {
     // VBO
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -136,13 +142,39 @@ bool Engine::buffers() {
     return true;
 }
 
+bool Engine::updateBuffers(unsigned int& VBO, std::vector<float>& vertices){
+    // VBO
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    return true;
+}
+
 void Engine::run(){
     if (window == nullptr){
         std::cerr << "Window is nullptr" << std::endl;
         return;
     }
 
+    // Intialise buffers
+    buffers(statVBO, statVAO, staticVertices);
+    buffers(dynVBO, dynVAO, dynamicVertices);
+
+    // Initial timer 
+    float lastFrame = (float)glfwGetTime();
     while (!glfwWindowShouldClose(window)){
+        float currentFrame = (float)glfwGetTime();
+        float deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        
+        // Update all ray object positions
+        for (auto& i : rays){
+            i.update(deltaTime);
+            i.constructVertices();
+            addRay(i);
+        }        
+
+        // Update dynamic buffers
+        updateBuffers(dynVBO, dynamicVertices);
+
         render();
     }
 }
@@ -152,14 +184,19 @@ void Engine::render(){
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-
+    
+    // Rezising window to keep aspect ratio
     GLint location = glGetUniformLocation(shaderProgram, "aspectRatio");
     glUniform1f(location, aspectRatio);
     if (location == -1){
         std::cerr << "location: " << std::to_string(location) << std::endl; 
     }
+
+    glBindVertexArray(statVAO);    
+    glDrawArrays(GL_TRIANGLES, 0, staticVertices.size() / 3);
+
+    glBindVertexArray(dynVAO);
+    glDrawArrays(GL_TRIANGLES, 0, dynamicVertices.size() / 3);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

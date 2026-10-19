@@ -15,15 +15,14 @@ int main() {
     engine.addCircle(c0);
 
     Ray r0({-0.9f, 0.4f, 0.0f},{1.0f, 0.0f, 0.0f});
-    r0.width = 0.025f;
     r0.constructVertices();
-    engine.addRay(r0);    
+    engine.submitRay(r0);   
 
+    Ray r1({-0.9f, 0.2f, 0.0f},unit_vector({0.5f, -0.5f, 0.0f}));
+    r1.constructVertices();
+    engine.submitRay(r1);
+    
     std::cout << engine.aspectRatio << std::endl;
-
-    if (!engine.buffers()){
-        return -1;
-    }
 
     engine.run();
 

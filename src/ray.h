@@ -11,9 +11,9 @@ class Ray {
 
         std::vector<Vertex> vertices;
 
-        float width = 0.05f;
+        float width = 0.005f;
 
-        float speed;
+        float speed = 1e-1;
         bool active = true;
 
         int nPath = 15;             // Number of points to keep in path vector
@@ -47,7 +47,12 @@ class Ray {
             vertices.push_back(C);
             vertices.push_back(D);
             return;
-        } 
+        }
+
+        void update(float dt){
+            // Update position of ray
+            position += unit_direction * speed * dt;
+        }
 
 };
 
