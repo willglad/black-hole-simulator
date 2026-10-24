@@ -1,6 +1,9 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "circle.h"
+#include <algorithm>
+
 class Engine {
     public:
 

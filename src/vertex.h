@@ -2,6 +2,7 @@
 #define VERTEX_H
 
 class Ray;
+class vec3;
 
 struct Vertex{
     float x;

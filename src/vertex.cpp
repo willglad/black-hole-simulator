@@ -1,4 +1,5 @@
 #include "vertex.h"
+#include "vec3.h"
 #include "ray.h"
 
 void Vertex::rotateFrame(const Ray& ray){
@@ -21,4 +22,4 @@ void Vertex::operator+=(const vec3& v){
             y += v.e[1];
             z += v.e[2];
             return;
-        }
+};

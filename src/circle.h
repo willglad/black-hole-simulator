@@ -1,9 +1,9 @@
 #ifndef CIRCLE_H
 #define CIRCLE_H
 
-#include "vertex.h"
-
 #include <cmath>
+
+#include "vertex.h"
 
 class Circle {
     public:

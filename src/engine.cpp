@@ -1,3 +1,10 @@
+#include <algorithm>
+
+#include "include.h"
+#include "engine.h"
+#include "circle.h"
+#include "ray.h"
+
 bool Engine::init() {
     if (!glfwInit()){
         std::cerr << "Failed to initialise GLFW" << std::endl;
@@ -112,8 +119,7 @@ void Engine::submitRay(const Ray& r){
 }
 
 void Engine::addRay(const Ray& r){
-    // Push back for each vertex
-    for (auto i : r.vertices){
+    for (auto i : r.vertexHistory){
         dynamicVertices.push_back(i.x);
         dynamicVertices.push_back(i.y);
         dynamicVertices.push_back(i.z);
@@ -165,7 +171,8 @@ void Engine::run(){
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         
-        // Update all ray object positions
+        // Update all ray object positions -- start by clearing the current dynamicVertices
+        dynamicVertices.clear();
         for (auto& i : rays){
             i.update(deltaTime);
             i.constructVertices();
