@@ -46,6 +46,8 @@ class Engine {
         std::vector<float> dynamicVertices;
         std::vector<Ray> rays;
 
+        std::vector<Circle> circles;
+
         void render();
         static void framebuffer_size_callback(
             GLFWwindow* window,

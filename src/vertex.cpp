@@ -4,7 +4,7 @@
 
 void Vertex::rotateFrame(const Ray& ray){
     // Trasform from the ray frame into comp frame
-    vec3 u = ray.unit_direction;
+    vec3 u = unit_vector(ray.velocity);
 
     float cos_theta = u.x();
     float sin_theta = u.y();

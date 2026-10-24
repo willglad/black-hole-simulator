@@ -84,6 +84,9 @@ bool Engine::init() {
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     return true;
 }
 
@@ -106,10 +109,16 @@ void Engine::framebuffer_size_callback(
 void Engine::addCircle(const Circle& c) {
     // Push back for each vertex
     for (auto i : c.vertices){
+        // Position
         staticVertices.push_back(i.x);
         staticVertices.push_back(i.y);
         staticVertices.push_back(i.z);
+    
+        // Alpha
+        float alpha = 1.0f;
+        staticVertices.push_back(alpha);
     }
+    circles.push_back(c);
 }
 
 void Engine::submitRay(const Ray& r){
@@ -119,10 +128,21 @@ void Engine::submitRay(const Ray& r){
 }
 
 void Engine::addRay(const Ray& r){
-    for (auto i : r.vertexHistory){
-        dynamicVertices.push_back(i.x);
-        dynamicVertices.push_back(i.y);
-        dynamicVertices.push_back(i.z);
+    for (size_t segment = 0; segment < r.vertexHistory.size() / 6; segment++){
+        // Alpha
+        float t = static_cast<float>(segment) / static_cast<float>(r.vertexHistory.size() / 6 - 1);
+        float alpha = (r.vertexHistory.size() / 6 - 1) != 0 ? r.alpha_min + t*(r.alpha_max-r.alpha_min) :  
+            r.alpha_max;
+
+            for (size_t k = 0; k < 6; k++){
+            const auto& v = r.vertexHistory[segment * 6 + k];
+
+            // Push v.x v.y and v.x and the segments alpha
+            dynamicVertices.push_back(v.x);
+            dynamicVertices.push_back(v.y);
+            dynamicVertices.push_back(v.z);
+            dynamicVertices.push_back(alpha);
+        }
     }
 }
 
@@ -135,22 +155,32 @@ bool Engine::buffers(unsigned int& VBO, unsigned int& VAO, std::vector<float>& v
     // VAO
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    glVertexAttribPointer(
-        0,                  // Attribute location
-        3,                  // Components per vertex
-        GL_FLOAT,           // Data type
-        GL_FALSE,           // Do not normalise
-        3*sizeof(float),    // Stride in bytes
-        (void*)0            // Offset into buffer
+    glVertexAttribPointer(      // Position
+        0,                          // Attribute location
+        3,                          // Components per vertex
+        GL_FLOAT,                   // Data type
+        GL_FALSE,                   // Do not normalise
+        4*sizeof(float),            // Stride in bytes
+        (void*)0                    // Offset into buffer
     );
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(      // Alpha
+        1,                          // Attribute location
+        1,                          // Components per vertex
+        GL_FLOAT,                   // Data type
+        GL_FALSE,                   // Do not normalise
+        4*sizeof(float),            // Stride in bytes
+        (void*)(3 * sizeof(float))  // Offset into buffer
+    );
+    glEnableVertexAttribArray(1);
 
     return true;
 }
 
 bool Engine::updateBuffers(unsigned int& VBO, std::vector<float>& vertices){
     // VBO
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
     return true;
 }
 
@@ -174,14 +204,16 @@ void Engine::run(){
         // Update all ray object positions -- start by clearing the current dynamicVertices
         dynamicVertices.clear();
         for (auto& i : rays){
-            i.update(deltaTime);
-            i.constructVertices();
-            addRay(i);
+             for (auto& j : circles){
+                i.update(j, deltaTime/5.0f);
+                addRay(i);
+             }
         }        
 
         // Update dynamic buffers
         updateBuffers(dynVBO, dynamicVertices);
 
+        glDisable(GL_DEPTH_TEST);
         render();
     }
 }
@@ -198,6 +230,9 @@ void Engine::render(){
     if (location == -1){
         std::cerr << "location: " << std::to_string(location) << std::endl; 
     }
+
+    GLint colorLoc = glGetUniformLocation(shaderProgram, "rayColor");
+    glUniform3f(colorLoc, 1.0f, 0.6f, 0.0f);
 
     glBindVertexArray(statVAO);    
     glDrawArrays(GL_TRIANGLES, 0, staticVertices.size() / 3);

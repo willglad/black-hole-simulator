@@ -3,33 +3,44 @@
 
 #include "vec3.h"
 #include "vertex.h"
+#include "circle.h"
 
 class Ray {
     public:
         point3 origin;
         point3 position;
-        vec3 unit_direction;
+        vec3 velocity;
+        vec3 acceleration;
 
         std::vector<Vertex> vertices;
         std::vector<Vertex> vertexHistory;
         std::vector<point3> positionHistory;
 
-        float width = 0.005f;
+        float perpWidth = 0.0025f;
+        float parallelWidth = 0.005f;
+        float drawLength = 250;
 
-        float speed = 1e-1;
+        float alpha_min = 0.1f;
+        float alpha_max = 1.0f;
+
+        float speed = 0.1f;
         bool active = true;
 
-        Ray(point3 orig, vec3 dir) 
+        Ray(point3 orig, vec3 dir, float speed) 
             : origin{orig.x(), orig.y(), orig.z()},
-            unit_direction{dir.x(), dir.y(), dir.z()} {
-                // Set intial position to origin, and add to path
-                position = origin;
-                
+            velocity{dir.x()*speed, dir.y()*speed, dir.z()*speed},
+            speed{speed} {
+                // Set intial position to origin
+                position = origin;         
             };
 
         void constructVertices();   // Constructs the vertices at the current position
 
-        void update(float dt);      // Adds position history to history, clips history, updates position
+        void update(Circle& bh, float dt);      // Calls all ray updates
+
+        void recordHistory();       // Records position and vertex history
+
+        vec3 newtonianDynamics(Circle& bh);
 };
 
 #endif

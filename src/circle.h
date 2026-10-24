@@ -18,6 +18,9 @@ class Circle {
         float cX        = 0.0f;
         float cY        = 0.0f;
         float cZ        = 0.0f;
+        
+        float mass = 1e8;
+
         std::vector<Vertex> vertices;
 
         std::vector<Vertex> constructVertices(int nsegments) {
