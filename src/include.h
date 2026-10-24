@@ -18,6 +18,7 @@
 #include "circle.h"
 #include "engine.h"
 #include "engine.cpp"
+#include "vertex.cpp"
 
 
 #endif

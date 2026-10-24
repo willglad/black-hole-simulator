@@ -28,17 +28,33 @@ class Ray {
             };
 
         void constructVertices(){
-            // Get the vertices for a square at the current location
-            float x_left = position.x() - width / 2.0f;
-            float x_right = position.x() + width / 2.0f;
-            float y_top = position.y() + width / 2.0f;
-            float y_bottom = position.y() - width / 2.0f;
+            // Draw a thin retangle aligned with the unit direction
+            float nwidth = 0.005f;
+            float mwidth = 0.0025f;
+
+            // Vertex coordinates in ray frame
+            float x_left = - nwidth;
+            float x_right = nwidth;
+            float y_bottom = - mwidth;
+            float y_top = mwidth;
 
             // Draw both triangles
             Vertex A = {x_left, y_bottom, 0.0f};
             Vertex B = {x_left, y_top, 0.0f};
             Vertex C = {x_right, y_top, 0.0f};
             Vertex D = {x_right, y_bottom, 0.0f};
+
+            // Rotate each vertex by R(theta)
+            A.rotateFrame(*this);
+            B.rotateFrame(*this);
+            C.rotateFrame(*this);
+            D.rotateFrame(*this);
+
+            // Add the position
+            A += position;
+            B += position;
+            C += position;
+            D += position;
 
             vertices.push_back(A);
             vertices.push_back(B);
