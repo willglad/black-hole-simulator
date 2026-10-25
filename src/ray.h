@@ -12,8 +12,6 @@ class Ray {
         vec3 velocity;
         vec3 acceleration;
 
-        std::vector<Vertex> vertices;
-        std::vector<Vertex> vertexHistory;
         std::vector<point3> positionHistory;
 
         float perpWidth = 0.0025f;
@@ -34,13 +32,18 @@ class Ray {
                 position = origin;         
             };
 
-        void constructVertices();   // Constructs the vertices at the current position
-
         void update(Circle& bh, float dt);      // Calls all ray updates
 
         void recordHistory();       // Records position and vertex history
 
         vec3 newtonianDynamics(Circle& bh);
 };
+
+inline std::ostream& operator<<(std::ostream& out, const std::vector<point3> v){
+    for (auto& i : v){
+        out << i;
+    }
+    return out;
+}
 
 #endif

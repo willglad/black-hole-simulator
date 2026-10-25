@@ -128,21 +128,18 @@ void Engine::submitRay(const Ray& r){
 }
 
 void Engine::addRay(const Ray& r){
-    for (size_t segment = 0; segment < r.vertexHistory.size() / 6; segment++){
+    for (size_t i = 0; i < r.positionHistory.size(); i++){
         // Alpha
-        float t = static_cast<float>(segment) / static_cast<float>(r.vertexHistory.size() / 6 - 1);
-        float alpha = (r.vertexHistory.size() / 6 - 1) != 0 ? r.alpha_min + t*(r.alpha_max-r.alpha_min) :  
+        float t = static_cast<float>(i) / static_cast<float>(r.positionHistory.size() - 1);
+        float alpha = (r.positionHistory.size() - 1) != 0 ? r.alpha_min + t*(r.alpha_max-r.alpha_min) :  
             r.alpha_max;
 
-            for (size_t k = 0; k < 6; k++){
-            const auto& v = r.vertexHistory[segment * 6 + k];
-
-            // Push v.x v.y and v.x and the segments alpha
-            dynamicVertices.push_back(v.x);
-            dynamicVertices.push_back(v.y);
-            dynamicVertices.push_back(v.z);
-            dynamicVertices.push_back(alpha);
-        }
+        // Push v.x v.y and v.x and the segments alpha
+        const auto& v = r.positionHistory[i];
+        dynamicVertices.push_back(v[0]);
+        dynamicVertices.push_back(v[1]);
+        dynamicVertices.push_back(v[2]);
+        dynamicVertices.push_back(alpha);
     }
 }
 
@@ -238,7 +235,7 @@ void Engine::render(){
     glDrawArrays(GL_TRIANGLES, 0, staticVertices.size() / 3);
 
     glBindVertexArray(dynVAO);
-    glDrawArrays(GL_TRIANGLES, 0, dynamicVertices.size() / 3);
+    glDrawArrays(GL_LINE_STRIP, 0, dynamicVertices.size() / 4);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
