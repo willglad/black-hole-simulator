@@ -106,9 +106,9 @@ void Engine::framebuffer_size_callback(
     glViewport(0, 0, width, height);
 }
 
-void Engine::addCircle(const Circle& c) {
+void Engine::submitCircle(const Circle& c) {
     // Push back for each vertex
-    for (auto i : c.vertices){
+    for (auto i : c.verticesCircumference){
         // Position
         staticVertices.push_back(i.x);
         staticVertices.push_back(i.y);
@@ -188,6 +188,7 @@ void Engine::run(){
     }
 
     // Intialise buffers
+    scaleVertices(staticVertices, scale);
     buffers(statVBO, statVAO, staticVertices);
     buffers(dynVBO, dynVAO, dynamicVertices);
 
@@ -202,12 +203,13 @@ void Engine::run(){
         dynamicVertices.clear();
         for (auto& i : rays){
              for (auto& j : circles){
-                i.update(j, deltaTime/5.0f);
+                i.update(j, 0.03f);
                 addRay(i);
              }
         }        
 
         // Update dynamic buffers
+        scaleVertices(dynamicVertices, scale);
         updateBuffers(dynVBO, dynamicVertices);
 
         glDisable(GL_DEPTH_TEST);
@@ -232,7 +234,7 @@ void Engine::render(){
     glUniform3f(colorLoc, 1.0f, 0.6f, 0.0f);
 
     glBindVertexArray(statVAO);    
-    glDrawArrays(GL_TRIANGLES, 0, staticVertices.size() / 3);
+    glDrawArrays(GL_LINE_STRIP, 0, staticVertices.size() / 4);
 
     glBindVertexArray(dynVAO);
     glDrawArrays(GL_LINE_STRIP, 0, dynamicVertices.size() / 4);
@@ -252,4 +254,13 @@ void Engine::cleanup(){
     glDeleteShader(fragmentShader);
 
     glfwTerminate();
+}
+
+void Engine::scaleVertices(std::vector<float>& u, float f) {
+    for (std::size_t i = 0; i < u.size(); ++i) {
+        if ((i + 1) % 4 == 0)
+            continue;
+
+        u[i] *= f;
+    }
 }

@@ -3,6 +3,7 @@
 #include "ray.h"
 #include "vec3.h"
 #include "engine.h"
+#include "constants.h"
 
 int main() {
    
@@ -12,15 +13,13 @@ int main() {
         return -1;
     }
 
-    Circle c0({0.0f, 0.0f, 0.0f}, 0.1f);
-    c0.constructVertices(50);
-    c0.mass = 1e11;
-    engine.addCircle(c0);
+    float mass_BH = 100 * solarMass;
+    Circle c0({0.0f, 0.0f, 0.0f}, mass_BH);
+    c0.constructCircumference(50);
+    engine.submitCircle(c0);
 
-    Ray r0({0.0f, 0.4f, 0.0f},{1.0f, 0.0f, 0.0f}, 4.0f);
-    engine.submitRay(r0);   
-
-    std::cout << engine.aspectRatio << std::endl;
+    Ray r1({0.0f, c0.r_s * 0.75, 0.0f},{1.0f, 0.0f, 0.0f}, c0.r_s);
+    engine.submitRay(r1);   
 
     engine.run();
 

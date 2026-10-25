@@ -11,22 +11,27 @@ class Engine {
         int wWidth      = 600;
         int wHeight     = 600;
 
-        // Simulation dimensions
-        double cWidth   = 8e11;
-        double cHeight  = 6e11;
-
         // aspect ratio based on initial window dimensions
         float aspectRatio = float(wWidth) / float(wHeight);
+
+        // scale everything down from dimensionless coords to screen coords
+        float scale = 1.0f/4.0f;
 
         // Background color
         float background_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-        bool init();
-        bool buffers(unsigned int& VBO, unsigned int& VAO, std::vector<float>& vertices);
-        bool updateBuffers(unsigned int& VBO, std::vector<float>& vertices);
-        void addCircle(const Circle& c);
-        void submitRay(const Ray& r);
-        void addRay(const Ray& r);
+        bool init();                                        // OpenGL setup
+
+        bool buffers(unsigned int& VBO,                     // Assigns buffers, vertex attributes
+            unsigned int& VAO,
+            std::vector<float>& vertices);
+
+        bool updateBuffers(unsigned int& VBO,               // Updates the buffers
+            std::vector<float>& vertices);
+
+        void submitCircle(const Circle& c);                    // Add a circle to the scene
+        void submitRay(const Ray& r);                       // Submit a ray to hold in scene, for updates
+
         void run();
         void cleanup();
 
@@ -48,7 +53,11 @@ class Engine {
 
         std::vector<Circle> circles;
 
-        void render();
+        void addRay(const Ray& r);                          // Adds ray trajectory to vertices
+
+        void scaleVertices(std::vector<float>& u, float f); // Scales vertices
+        
+        void render();                                      // Renders the vertices (dynamic and static)
         static void framebuffer_size_callback(
             GLFWwindow* window,
             int width,
@@ -70,5 +79,12 @@ class Engine {
 
         }
 };
+
+inline std::ostream& operator<<(std::ostream& out, const std::vector<float> v){
+    for (auto& i : v){
+        out << i;
+    }
+    return out;
+}
 
 #endif
