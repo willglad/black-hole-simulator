@@ -5,6 +5,13 @@
 #include "vertex.h"
 #include "circle.h"
 
+struct PhotonState{
+    double u;
+    double phi;
+    double rho;
+    double b;
+};
+
 class Ray {
     public:
         point3 origin;          // Given in dimensionless coords -- 1/r_s
@@ -13,11 +20,14 @@ class Ray {
         vec3 acceleration;      // Given in dimensionless coords -- 1/r_s * c**2
 
         std::vector<point3> positionHistory;
+        std::vector<vec3> velocityHistory;
 
         float drawLength = 250;
 
         float alpha_min = 0.1f;
         float alpha_max = 1.0f;
+
+        PhotonState photonState{};
 
         float speed = 0.1f;
         float r_s;
@@ -31,7 +41,12 @@ class Ray {
                 // Set intial position to origin
                 position = origin;
 
-                std::cout << position << " -- " << velocity << '\n';
+                // Set impact parameter
+                photonState.b = cross(origin, velocity).length();
+                photonState.rho = position.length();
+                photonState.phi = std::atan2(origin.y(), origin.x());
+                photonState.u = - std::sqrt(1 - (1 - (1 / photonState.rho)) * 
+                            photonState.b*photonState.b / (photonState.rho * photonState.rho));
             };
 
         void update(Circle& bh, float dt);      // Calls all ray updates
@@ -39,6 +54,8 @@ class Ray {
         void recordHistory();       // Records position and vertex history
 
         vec3 newtonianDynamics(Circle& bh);
+
+        point3 langrangianDynamics(Circle& bh, float timestep);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const std::vector<point3> v){
