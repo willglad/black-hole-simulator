@@ -7,7 +7,7 @@ void Ray::update(Circle& bh, float dt){
     float dtSim = dt;
 
     // Update the current position based on Schwarzchild BH solution in 2D
-    position = langrangianDynamics(bh, dtSim);
+    position = langrangianDynamics(dtSim);
 
     // Add new position to history
     recordHistory();
@@ -36,7 +36,7 @@ vec3 Ray::newtonianDynamics(Circle& bh){
     return -0.5f / r.length_squared() * unit_vector(r);
 };
 
-point3 Ray::langrangianDynamics(Circle& bh, float timestep){
+point3 Ray::langrangianDynamics(float timestep){
     double& b = photonState.b;
     double& u = photonState.u;
     double& phi = photonState.phi;

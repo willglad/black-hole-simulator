@@ -18,7 +18,7 @@ int main() {
     c0.constructCircumference(50);
     engine.submitCircle(c0);
 
-    Ray r1({0.0f, c0.r_s * 2.8, 0.0f},{1.0f, 0.0f, 0.0f}, c0.r_s);
+    Ray r1({-c0.r_s * 10.0f, c0.r_s * 2.608, 0.0f},{1.0f, 0.0f, 0.0f}, c0.r_s);
     engine.submitRay(r1);   
 
     engine.run();

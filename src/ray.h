@@ -42,9 +42,14 @@ class Ray {
                 position = origin;
 
                 // Set impact parameter
-                photonState.b = cross(origin, velocity).length();
+                vec3 L = cross(origin, velocity);
+                float sgn = (L[2] < 0) ? -1.0f : 1.0f;
+                photonState.b = sgn * L.length();
+                // Set rho
                 photonState.rho = position.length();
-                photonState.phi = std::atan2(origin.y(), origin.x());
+                // Set phi
+                photonState.phi = std::atan2(position.y(), position.x());
+                // Set u
                 photonState.u = - std::sqrt(1 - (1 - (1 / photonState.rho)) * 
                             photonState.b*photonState.b / (photonState.rho * photonState.rho));
             };
@@ -55,7 +60,7 @@ class Ray {
 
         vec3 newtonianDynamics(Circle& bh);
 
-        point3 langrangianDynamics(Circle& bh, float timestep);
+        point3 langrangianDynamics(float timestep);
 };
 
 inline std::ostream& operator<<(std::ostream& out, const std::vector<point3> v){
