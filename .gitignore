@@ -6,3 +6,7 @@ build-run.sh
 *.o
 *.a
 *.so
+*.obj
+*.exe
+*.dylib
+*.dll
